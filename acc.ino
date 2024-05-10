@@ -1,5 +1,6 @@
 #include <AFMotor.h>
 #include <ros.h>
+#include <std_msgs/String.h>
 #include <std_msgs/Int16.h> // Include the message type for speed command
 
 AF_DCMotor motor1(1); // Motor 1 is connected to M1 port

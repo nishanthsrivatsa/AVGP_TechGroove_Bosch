@@ -41,7 +41,7 @@ def sensor1_callback(data):
     speed = min(max(speed, 0), 255)  # Limit speed to range [0, 255]
     rospy.loginfo("Distance %d , Error: %d Kp: %d , Ki: %d , Speed: %d ,Prev_error %d "  % (data.data ,error, Kp ,Ki,speed,prev_error))
     # Publish speed command
-    pub_robot_commands.publish(int(speed))
+    pub_robot_commands.publish(str(speed))
     
     # Update previous error
     prev_error = error

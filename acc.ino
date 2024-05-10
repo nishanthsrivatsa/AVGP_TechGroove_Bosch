@@ -8,6 +8,8 @@ AF_DCMotor motor3(3); // Motor 3 is connected to M3 port
 AF_DCMotor motor4(4); // Motor 4 is connected to M4 port
 
 ros::NodeHandle nh;
+ros::Publisher string_data("message", &msg);
+std_msgs::String msg;
 
 void commandCallback(const std_msgs::Int16& msg) {
   int speed = msg.data;
@@ -20,9 +22,12 @@ void setup() {
   Serial.begin(9600); // Initialize serial communication
   nh.initNode();
   nh.subscribe(sub);
+  nh.advertise(string_data);
 }
 
 void loop() {
+  msg.data = "Hello";
+  string_data.publish(&msg);
   nh.spinOnce();
 }
 

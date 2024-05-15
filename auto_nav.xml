@@ -1,0 +1,25 @@
+<launch>
+    <!-- Load robot description -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find my_robot_description_package)/urdf/my_robot.urdf"/>
+
+    <!-- Load map -->
+    <arg name="map_file" default="$(find my_map_package)/maps/my_map.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
+
+    <!-- Launch AMCL node -->
+    <node name="amcl" pkg="amcl" type="amcl">
+        <param name="use_map_topic" value="true"/>
+        <param name="initial_pose_x" value="0.0"/>
+        <param name="initial_pose_y" value="0.0"/>
+        <param name="initial_pose_a" value="0.0"/>
+        <param name="odom_model_type" value="diff"/>
+        <param name="odom_alpha5" value="0.1"/>
+        <param name="laser_max_beams" value="30"/>
+        <param name="laser_max_range" value="10.0"/>
+        <param name="min_particles" value="100"/>
+        <param name="max_particles" value="500"/>
+        <param name="update_min_d" value="0.2"/>
+        <param name="update_min_a" value="0.5"/>
+        <param name="resample_interval" value="1"/>
+    </node>
+</launch>

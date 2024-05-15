@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Define robot parameters -->
+  <xacro:property name="wheel_radius" value="0.035"/>
+  <xacro:property name="wheel_width" value="0.023"/>
+  <xacro:property name="base_length" value="0.255"/>
+  <xacro:property name="base_width" value="0.15"/>
+  <xacro:property name="laser_height" value="0.14"/>
+
+  <!-- Link: base_link -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="${base_length} ${base_width} 0.06"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0.54 0.27 0.07 0.15"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Link: laser_link -->
+  <link name="laser_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.04" radius="0.035"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Joint: base_to_laser -->
+  <joint name="base_to_laser" type="fixed">
+    <parent link="base_link"/>
+    <child link="laser_link"/>
+    <origin xyz="0.035 0 ${laser_height}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Wheels, sensors, and other components can be added similarly -->
+
+</robot>

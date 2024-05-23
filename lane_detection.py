@@ -11,15 +11,19 @@ bridge = CvBridge()
 pub = None
 
 def process_frame(frame):
-
+    # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
+    # Threshold to detect black color
     _, binary = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY_INV)
 
+    # Gaussian blur
     blur = cv2.GaussianBlur(binary, (5, 5), 0)
 
+    # Canny edges detection
     edges = cv2.Canny(blur, 50, 150)
 
+    # Masking the edges image
     height, width = edges.shape
     mask = np.zeros_like(edges)
     polygon = np.array([[
@@ -32,8 +36,10 @@ def process_frame(frame):
     cv2.fillPoly(mask, polygon, 255)
     masked_edges = cv2.bitwise_and(edges, mask)
 
+    # Hough Transform to detect lines
     lines = cv2.HoughLinesP(masked_edges, 1, np.pi / 180, 50, minLineLength=100, maxLineGap=50)
 
+    # Create an image to draw lines on
     line_image = np.zeros_like(frame)
 
     left_line_x = []
@@ -50,6 +56,7 @@ def process_frame(frame):
                     right_line_x.append(x2)
                 cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 10)
 
+    # Draw the lines on the original image
     combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
 
     return combo_image, left_line_x, right_line_x
@@ -63,13 +70,13 @@ def determine_command(left_line_x, right_line_x, width):
         frame_center = width / 2
 
         if lane_center < frame_center - 50:
-            command.data = "L"
+            command.data = "L"  # Turn left
         elif lane_center > frame_center + 50:
-            command.data = "R"
+            command.data = "R"  # Turn right
         else:
-            command.data = "F"
+            command.data = "F"  # Go forward
     else:
-        command.data = "S"
+        command.data = "S"  # Stop if no lanes detected
 
     return command
 
@@ -79,6 +86,7 @@ def image_callback(msg):
     cv2.imshow("Lane Detection", lane_frame)
     cv2.waitKey(1)
 
+    # Determine the motor command based on lane detection
     height, width, _ = frame.shape
     command = determine_command(left_line_x, right_line_x, width)
     pub.publish(command)

@@ -1,0 +1,127 @@
+
+
+#include <ros.h>
+#include <std_msgs/String.h>
+
+// Define the pins for the L298N motor driver
+const int enA = 9;  // PWM pin to control speed of motor A
+const int in1A = 8;  // Control pin 1 for motor A
+const int in2A = 7;  // Control pin 2 for motor A
+
+const int enB = 10;  // PWM pin to control speed of motor B
+const int in1B = 6;  // Control pin 1 for motor B
+const int in2B = 5;  // Control pin 2 for motor B
+
+const int speed = 255;
+
+
+ros::NodeHandle nh;
+
+void commandCallback(const std_msgs::String& msg) {
+  char command = msg.data[0];
+
+  switch (command) {
+    case 'w': // Move forward
+      moveForward();
+      
+      break;
+    case 's': // Move backward
+      moveBackward;
+      
+      break;
+    case 'a': // Turn left
+      turnLeft();
+      break;
+    case 'd': // Turn right
+      turnRight();
+      break;
+    case 'o': // Stop
+      stopMotors();
+      break;
+  }
+}
+
+ros::Subscriber<std_msgs::String> sub("/robot_commands", &commandCallback);
+
+void setup() {
+  Serial.begin(9600); // Initialize serial communication
+  nh.initNode();
+  nh.subscribe(sub);
+   pinMode(enA, OUTPUT);
+  pinMode(in1A, OUTPUT);
+  pinMode(in2A, OUTPUT);
+  
+  pinMode(enB, OUTPUT);
+  pinMode(in1B, OUTPUT);
+  pinMode(in2B, OUTPUT);
+  
+  // Initialize motors to off
+  digitalWrite(in1A, LOW);
+  digitalWrite(in2A, LOW);
+  analogWrite(enA, 0);
+
+  digitalWrite(in1B, LOW);
+  digitalWrite(in2B, LOW);
+  analogWrite(enB, 0);
+}
+
+void loop() {
+  nh.spinOnce();
+}
+
+void moveForward() {
+  Serial.print("Forward command Recived");
+  digitalWrite(in1A, HIGH);
+  digitalWrite(in2A, LOW);
+  digitalWrite(in1B, HIGH);
+  digitalWrite(in2B, LOW);
+  analogWrite(enA, speed);
+  analogWrite(enB, speed);
+}
+
+void moveBackward() {
+  digitalWrite(in1A,LOW );
+  digitalWrite(in2A, HIGH);
+  digitalWrite(in1B, LOW);
+  digitalWrite(in2B, HIGH);
+  analogWrite(enA, speed);
+  analogWrite(enB, speed);
+}
+
+void turnLeft() {
+  digitalWrite(in1A,LOW );
+  digitalWrite(in2A, HIGH);
+  digitalWrite(in1B, HIGH);
+  digitalWrite(in2B, LOW);
+  analogWrite(enA, speed);
+  analogWrite(enB, speed);
+}
+
+void turnRight() {
+  digitalWrite(in1A,HIGH);
+  digitalWrite(in2A, LOW);
+  digitalWrite(in1B, LOW);
+  digitalWrite(in2B, HIGH);
+  analogWrite(enA, speed);
+  analogWrite(enB, speed);
+}
+
+void stopMotors() {
+  digitalWrite(in1A, LOW);
+  digitalWrite(in2A, LOW);
+  digitalWrite(in1B, LOW);
+  digitalWrite(in2B, LOW);
+}
+void park() {
+  moveForward();
+  delay(100);
+  turnLeft();
+  delay(50);
+  stopMotors();
+  delay(10);
+  turnRight();
+  delay(50);
+  stopMotors();
+  delay(10000000);
+    
+}
